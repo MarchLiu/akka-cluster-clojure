@@ -1,10 +1,37 @@
 # akka-cluster-clojure
 
-A Clojure library designed to ... well, that part is up to you.
+A Clojure library designed to use akka cluster
 
 ## Usage
 
-FIXME
+### INSTALLATION
+
+For leiningen: 
+
+```clojure
+ [liu.mars/akka-cluster-clojure "0.1.1"]
+```
+
+### Functions
+
+#### subscribe
+
+#### unsubscribe
+
+#### publish
+
+#### put
+
+#### remove
+
+#### send
+
+#### send all
+
+## What's new
+
+ - 0.1.2 clean mediator actor if create it temporary.
+
 
 ## License
 
