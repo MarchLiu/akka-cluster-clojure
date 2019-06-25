@@ -1,7 +1,15 @@
 (ns liu.mars.akka-cluster
   (:require [liu.mars.actor :refer [!]])
-  (:import (akka.actor AbstractActor)
-           (akka.cluster.pubsub DistributedPubSub DistributedPubSubMediator$Subscribe DistributedPubSubMediator$Publish DistributedPubSubMediator DistributedPubSubMediator$Put DistributedPubSubMediator$Send DistributedPubSubMediator$SendToAll DistributedPubSubMediator$Unsubscribe DistributedPubSubMediator$Remove)))
+  (:import (akka.actor AbstractActor ActorSystem ActorRef)
+           (akka.cluster.pubsub DistributedPubSub DistributedPubSubMediator$Subscribe
+                                DistributedPubSubMediator$Publish
+                                DistributedPubSubMediator$Put
+                                DistributedPubSubMediator$Send
+                                DistributedPubSubMediator$SendToAll
+                                DistributedPubSubMediator$Unsubscribe
+                                DistributedPubSubMediator$Remove)
+           (akka.cluster.client ClusterClientSettings ClusterClient SubscribeContactPoints SubscribeClusterClients)
+           (java.util Set)))
 
 (defn mediator [^AbstractActor actor]
   (-> actor
@@ -61,3 +69,23 @@
   ([path message self all-but-self]
    (let [m (mediator self)]
      (send m path message self all-but-self))))
+
+(defn client-with
+  ([^ActorSystem system ^Set contacts ^String name]
+   (-> system
+       (ClusterClientSettings/create)
+       (.withInitialContacts contacts)
+       (ClusterClient/props)
+       (#(.actorOf system % name))))
+  ([^ActorSystem system ^Set contacts]
+   (-> system
+       (ClusterClientSettings/create)
+       (.withInitialContacts contacts)
+       (ClusterClient/props)
+       (#(.actorOf system % name)))))
+
+(defn subscribe-contact-points [^ActorRef client ^ActorRef to]
+  (! client (SubscribeContactPoints/getInstance) to))
+
+(defn subscribe-cluster-clients [^ActorRef client ^ActorRef to]
+  (! client (SubscribeClusterClients/getInstance) to))
