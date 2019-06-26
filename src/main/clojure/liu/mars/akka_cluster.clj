@@ -1,15 +1,13 @@
 (ns liu.mars.akka-cluster
   (:require [liu.mars.actor :refer [!]])
-  (:import (akka.actor AbstractActor ActorSystem ActorRef)
+  (:import (akka.actor AbstractActor)
            (akka.cluster.pubsub DistributedPubSub DistributedPubSubMediator$Subscribe
                                 DistributedPubSubMediator$Publish
                                 DistributedPubSubMediator$Put
                                 DistributedPubSubMediator$Send
                                 DistributedPubSubMediator$SendToAll
                                 DistributedPubSubMediator$Unsubscribe
-                                DistributedPubSubMediator$Remove)
-           (akka.cluster.client ClusterClientSettings ClusterClient SubscribeContactPoints SubscribeClusterClients ClusterClientReceptionist)
-           (java.util Set)))
+                                DistributedPubSubMediator$Remove)))
 
 (defn mediator [^AbstractActor actor]
   (-> actor
@@ -59,38 +57,13 @@
 (defn send
   ([m path message self local-affinity]
    (! m (DistributedPubSubMediator$Send. path message local-affinity) self))
-  ([path message self local-affinity]
-   (let [m (mediator self)]
-     (send m path message self local-affinity))))
+  ([path message this local-affinity]
+   (let [m (mediator this)]
+     (send m path message (.getSelf this) local-affinity))))
 
 (defn send-all
   ([m path message self all-but-self]
    (! m (DistributedPubSubMediator$SendToAll. path message all-but-self) self))
-  ([path message self all-but-self]
-   (let [m (mediator self)]
-     (send m path message self all-but-self))))
-
-(defn client-with
-  ([^ActorSystem system ^Set contacts ^String name]
-   (-> system
-       (ClusterClientSettings/create)
-       (.withInitialContacts contacts)
-       (ClusterClient/props)
-       (#(.actorOf system % name))))
-  ([^ActorSystem system ^Set contacts]
-   (-> system
-       (ClusterClientSettings/create)
-       (.withInitialContacts contacts)
-       (ClusterClient/props)
-       (#(.actorOf system %)))))
-
-(defn subscribe-contact-points [^ActorRef client ^ActorRef to]
-  (! client (SubscribeContactPoints/getInstance) to))
-
-(defn subscribe-cluster-clients [^ActorRef client ^ActorRef to]
-  (! client (SubscribeClusterClients/getInstance) to))
-
-(defn register-service [system props name]
-  (-> system
-      ClusterClientReceptionist/get
-      (.registerService (.actorOf system props name))))
+  ([path message this all-but-self]
+   (let [m (mediator this)]
+     (send m path message (.getSelf this) all-but-self))))
