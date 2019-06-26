@@ -1,4 +1,4 @@
-(ns liu.mars.cluster-client
+(ns liu.mars.akka.cluster-client
   (:require [liu.mars.actor :refer [!]])
   (:import (akka.cluster.client ClusterClientSettings ClusterClient SubscribeContactPoints SubscribeClusterClients ClusterClientReceptionist ClusterClient$Send ClusterClient$SendToAll)
            (akka.actor ActorSystem ActorRef)
