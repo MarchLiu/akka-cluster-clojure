@@ -8,7 +8,7 @@
                                 DistributedPubSubMediator$SendToAll
                                 DistributedPubSubMediator$Unsubscribe
                                 DistributedPubSubMediator$Remove)
-           (akka.cluster.client ClusterClientSettings ClusterClient SubscribeContactPoints SubscribeClusterClients)
+           (akka.cluster.client ClusterClientSettings ClusterClient SubscribeContactPoints SubscribeClusterClients ClusterClientReceptionist)
            (java.util Set)))
 
 (defn mediator [^AbstractActor actor]
@@ -82,10 +82,15 @@
        (ClusterClientSettings/create)
        (.withInitialContacts contacts)
        (ClusterClient/props)
-       (#(.actorOf system % name)))))
+       (#(.actorOf system %)))))
 
 (defn subscribe-contact-points [^ActorRef client ^ActorRef to]
   (! client (SubscribeContactPoints/getInstance) to))
 
 (defn subscribe-cluster-clients [^ActorRef client ^ActorRef to]
   (! client (SubscribeClusterClients/getInstance) to))
+
+(defn register-service [system props name]
+  (-> system
+      ClusterClientReceptionist/get
+      (.registerService (.actorOf system props name))))
