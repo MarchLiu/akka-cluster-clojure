@@ -30,6 +30,7 @@ For leiningen:
 
 ## What's new
 
+ - 0.1.6 rename namespaces  
  - 0.1.5 add client send and send all
  - 0.1.3 add cluster subscribe functions
  - 0.1.2 clean mediator actor if create it temporary.

@@ -1,4 +1,4 @@
-(ns liu.mars.akka-cluster
+(ns liu.mars.cluster
   (:require [liu.mars.actor :refer [!]])
   (:import (akka.actor AbstractActor)
            (akka.cluster.pubsub DistributedPubSub DistributedPubSubMediator$Subscribe
