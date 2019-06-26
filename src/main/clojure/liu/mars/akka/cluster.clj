@@ -59,7 +59,10 @@
    (! m (DistributedPubSubMediator$Send. path message local-affinity) self))
   ([path message this local-affinity]
    (let [m (mediator this)]
-     (send m path message (.getSelf this) local-affinity))))
+     (send m path message (.getSelf this) local-affinity)))
+  ([path message this]
+   (let [m (mediator this)]
+     (send m path message (.getSelf this)))))
 
 (defn send-all
   ([m path message self all-but-self]

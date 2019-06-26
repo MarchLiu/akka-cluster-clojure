@@ -29,8 +29,11 @@
       ClusterClientReceptionist/get
       (.registerService (.actorOf system props name))))
 
-(defn send [client path message self local-affinity]
-  (! client (ClusterClient$Send. path message local-affinity) self))
+(defn send
+  ([client path message self local-affinity]
+   (! client (ClusterClient$Send. path message local-affinity) self))
+  ([client path message self]
+   (! client (ClusterClient$Send. path message) self)))
 
 (defn send-all [client path message self]
   (! client (ClusterClient$SendToAll. path message) self))
